@@ -5,9 +5,10 @@ export default function Treasure(props) {
   const treasure = props.treasure.map((item, index) => {
     return <img src={item.image_url} key={index} alt="" />;
   });
+  console.log(props)
   return (
     <div>
-      {props.addMyTreasure ? <AddTreasure /> : null}
+      {props.addMyTreasure ? <AddTreasure addMyTreasure={props.addMyTreasure}/> : null}
       {treasure}
     </div>
   );

@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import './Container.css';
 import Treasure from '../Treasure';
+import Axios from 'axios';
 
 export default class Container extends Component {
   constructor() {
@@ -8,6 +9,8 @@ export default class Container extends Component {
     this.state = {
       treasures: {},
     };
+
+    this.addMyTreasure = this.addMyTreasure.bind(this)
   }
 
   componentDidUpdate(prevProps) {
@@ -18,15 +21,33 @@ export default class Container extends Component {
 
   getDragonTreasure(){
     // no auth required
+    Axios.get('/api/treasure/dragon').then(res => {
+      this.setState({
+        treasures: { ...this.state.treasures, dragon: res.data }
+      })
+    })
   }
   getAllTreasure(){
     // admin auth required
+    Axios.get('/api/treasure/all').then(res => {
+      this.setState({
+        treasures: { ...this.state.treasures, all: res.data}
+      })
+    })
   }
   getMyTreasure(){
     // login auth required
+    Axios.get('/api/treasure/user').then(res => {
+      this.setState({
+        treasures: { ...this.state.treasures, user: res.data }
+      })
+    })
   }
 
-  addMyTreasure () {
+  addMyTreasure (value) {
+    this.setState({
+      treasures: { ...this.state.treasures }, user: value
+    })
   };
 
   render() {
@@ -41,7 +62,7 @@ export default class Container extends Component {
           </div>
         ) : (
           <div className="treasureBox">
-            <button className="title" onClick={()=>{}}>
+            <button className="title" onClick={()=>{this.getDragonTreasure()}}>
               See Dragon's <br /> Treasure
             </button>
             <p>This treasure trove does not require a user to be logged in for access</p>
@@ -53,11 +74,14 @@ export default class Container extends Component {
               {this.props.user.username}
               's treasure
             </h1>
-            <Treasure treasure={user} />
+            <Treasure 
+            treasure={user}
+            addMyTreasure={this.addMyTreasure}
+            />
           </div>
         ) : (
           <div className="treasureBox">
-            <button className="title" onClick={()=>{}} name="user">
+            <button className="title" onClick={()=>{this.getMyTreasure()}} name="user">
               See My <br /> Treasure
             </button>
             <p>This treasure trove requires a user to be logged in for access</p>
@@ -70,7 +94,7 @@ export default class Container extends Component {
           </div>
         ) : (
           <div className="treasureBox">
-            <button className="title" onClick={()=>{}} name="all">
+            <button className="title" onClick={()=>{this.getAllTreasure()}} name="all">
               See All <br /> Treasure
             </button>
             <p>This treasure trove requires a user to be a logged in as an admin user for access</p>
